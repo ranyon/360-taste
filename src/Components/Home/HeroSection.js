@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import styled from 'styled-components';
+import './Hero.css'
 
 const HeroContainer = styled(Container)`
   height: 100vh;
@@ -15,7 +16,7 @@ const HeroTitle = styled.h1`
   font-size: 4rem;
   font-weight: bold;
   margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  // text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
 const HeroSubtitle = styled.p`
@@ -27,8 +28,8 @@ const HeroSubtitle = styled.p`
 const HeroSection = () => {
   return (
     <HeroContainer>
-      <HeroTitle>Welcome to 360 Taste</HeroTitle>
-      <HeroSubtitle>A Taste Of Home.</HeroSubtitle>
+      <HeroTitle>Welcome to <span className='gradient-text'>360 Taste</span></HeroTitle>
+      <HeroSubtitle>A Taste Of Home...</HeroSubtitle>
     </HeroContainer>
   );
 };
