@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import './Hero.css'
 
 const HeroContainer = styled(Container)`
-  height: 100vh;
+  height: 80vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
