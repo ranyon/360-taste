@@ -2,11 +2,20 @@ import React from 'react';
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import './Navbar.css';
 import { Link } from 'react-scroll';
+import Logo from '../images/360logo.png'
+
 
 const NavbarComponent = () => {
   return (
     <Navbar bg="dark" variant="dark" expand="lg" fixed="top">
-      <Navbar.Brand as={Link} to="home" smooth={true} duration={500}>360 Taste</Navbar.Brand>
+      <Navbar.Brand as={Link} to="home" smooth={true} duration={500}>
+      <img
+          src={Logo}
+          alt="360 Taste Logo"
+          width="60"
+          height="60"
+        />
+      </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="ml-auto">
@@ -20,3 +29,6 @@ const NavbarComponent = () => {
 };
 
 export default NavbarComponent;
+
+
+//STABLE VERSION
