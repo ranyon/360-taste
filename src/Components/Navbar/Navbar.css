@@ -1,0 +1,4 @@
+.navbar-overlay {
+    position: relative;
+    z-index: 1; /* Ensure the navbar is above the background */
+  }
