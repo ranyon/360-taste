@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Modal } from 'react-bootstrap';
 
 // Import your menu images
-import foodMenuThumbnail from './food-menu-full.png';
-import foodMenuFull from './food-menu-full.png';
+import foodMenuThumbnail from './food-menu-full1.png';
+import foodMenuFull from './food-menu-full1.png';
 import drinksMenuThumbnail from './drinks-menu-full.png';
 import drinksMenuFull from './drinks-menu-full.png';
 

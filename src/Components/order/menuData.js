@@ -2,6 +2,9 @@
 // import Pineapple from './foodImg/pineapple.jpg';
 // import LFries from './foodImg/loadedFries.jfif';
 // import Banku from './foodImg/banku.jfif';
+
+
+// MAIN
 import MaxiPlainRice from './foodImg/maxiPlainRice.png';
 import MaxiWaakye from './foodImg/maxiWaakye.png';
 import FullyLoadedWaakye from './foodImg/fullyLoadedWaakye.png';
@@ -21,6 +24,8 @@ import YamChipsAndChicken from './foodImg/yamChipsAndChickenWings.png';
 import YamChipsAndTurkey from './foodImg/yamChipsAndTurkey.png';
 import YamChipsAndGoat from './foodImg/yamChipsAndGoat.png';
 import YamChipsAndGizzard from './foodImg/yamChipsAndGizzard.png';
+// MAIN
+
 // SIDES
 import Jollof from './foodImg/jollof.png';
 import PlainRice from './foodImg/plainRice.png';
