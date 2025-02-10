@@ -6,6 +6,8 @@ import NavbarComponent from './Components/Navbar/NavBarComponent';
 import HeroSection from './Components/Home/HeroSection';
 import Menu from './Components/Menu/Menu';
 import OrderPage from './Components/order/OrderPage';
+import OrderStatusPage from './Components/order/OrderStatusPage';
+import UpdateOrderStatusPage from './Components/order/UpdateOrderStatusPage';
 import Footer from './Components/Footer/Footer';
 import './App.css';
 
@@ -53,6 +55,8 @@ function App() {
             } />
             <Route path="/order" element={<OrderPage />} />
             <Route path="/order/:categoryId" element={<OrderPage />} />
+            <Route path="/order-status/:orderId" element={<OrderStatusPage />} />
+            <Route path="/updateorderstatus" element={<UpdateOrderStatusPage />} />
           </Routes>
           <div data-aos="fade-up" id="contact">
             <Footer />

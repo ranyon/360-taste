@@ -6,7 +6,8 @@ const STORAGE_KEYS = {
   ORDER_ATTEMPTS: 'orderAttempts',
   LAST_ORDER_TIME: 'lastOrderTime',
   BLOCKED_NUMBERS: 'blockedNumbers',
-  ORDER_HISTORY: 'orderHistory'
+  ORDER_HISTORY: 'orderHistory',
+  ORDER_ID: 'orderId'
 };
 
 // Move storage helpers outside component to prevent recreating on each render
@@ -56,21 +57,24 @@ export const useOrderState = (initialCategoryId) => {
   const [transactionId, setTransactionId] = useState('');
   const [deliveryLocation, setDeliveryLocation] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [orderId, setOrderId] = useState(() =>
+    getStoredValue(STORAGE_KEYS.ORDER_ID, '')
+  );
 
   // Initialize persistent state with stored values
-  const [orderAttempts, setOrderAttempts] = useState(() => 
+  const [orderAttempts, setOrderAttempts] = useState(() =>
     getStoredValue(STORAGE_KEYS.ORDER_ATTEMPTS, 0)
   );
-  
-  const [lastOrderTime, setLastOrderTime] = useState(() => 
+
+  const [lastOrderTime, setLastOrderTime] = useState(() =>
     getStoredValue(STORAGE_KEYS.LAST_ORDER_TIME, null)
   );
-  
-  const [blockedNumbers, setBlockedNumbers] = useState(() => 
+
+  const [blockedNumbers, setBlockedNumbers] = useState(() =>
     getStoredValue(STORAGE_KEYS.BLOCKED_NUMBERS, new Set())
   );
-  
-  const [orderHistory, setOrderHistory] = useState(() => 
+
+  const [orderHistory, setOrderHistory] = useState(() =>
     getStoredValue(STORAGE_KEYS.ORDER_HISTORY, {})
   );
 
@@ -99,6 +103,12 @@ export const useOrderState = (initialCategoryId) => {
     setStoredValue(STORAGE_KEYS.ORDER_HISTORY, newValue);
   }, [orderHistory]);
 
+  const updateOrderId = useCallback((value) => {
+    const newValue = typeof value === 'function' ? value(orderId) : value;
+    setOrderId(newValue);
+    setStoredValue(STORAGE_KEYS.ORDER_ID, newValue);
+  }, [orderId]);
+
   // Cleanup effect with stable dependencies
   useEffect(() => {
     const cleanupInterval = setInterval(() => {
@@ -109,7 +119,7 @@ export const useOrderState = (initialCategoryId) => {
       // Clean up old history entries
       const currentHistory = getStoredValue(STORAGE_KEYS.ORDER_HISTORY, {});
       const updatedHistory = Object.fromEntries(
-        Object.entries(currentHistory).filter(([_, data]) => 
+        Object.entries(currentHistory).filter(([_, data]) =>
           now - new Date(data.lastOrder) <= ONE_DAY
         )
       );
@@ -171,6 +181,7 @@ export const useOrderState = (initialCategoryId) => {
     lastOrderTime,
     blockedNumbers,
     orderHistory,
+    orderId,
 
     // Basic setters
     setSelectedCategory,
@@ -184,6 +195,7 @@ export const useOrderState = (initialCategoryId) => {
     setTransactionId,
     setDeliveryLocation,
     setErrorMessage,
+    setOrderId: updateOrderId,
 
     // Persistent state updaters
     setOrderAttempts: updateOrderAttempts,

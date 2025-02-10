@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { 
-  validatePhoneNumber, 
-  validateTransactionId, 
+import {
+  validatePhoneNumber,
+  validateTransactionId,
   validateDeliveryLocation,
   checkSpamming,
   updateCart,
@@ -27,7 +27,8 @@ export const useOrderHandlers = (orderState) => {
     setOrderPlaced,
     setErrorMessage,
     setIsSubmitting,
-    resetOrderState
+    resetOrderState,
+    setOrderId
   } = orderState;
 
   const handlePayment = useCallback(async (e) => {
@@ -63,8 +64,8 @@ export const useOrderHandlers = (orderState) => {
       // Cooldown period check
       if (lastOrderTime) {
         const minutesSinceLastOrder = (new Date() - new Date(lastOrderTime)) / (1000 * 60);
-        if (minutesSinceLastOrder < 5) {
-          throw new Error('Please wait 5 minutes between orders');
+        if (minutesSinceLastOrder < 1) {
+          throw new Error('Please wait 1 minute between orders');
         }
       }
 
@@ -77,6 +78,10 @@ export const useOrderHandlers = (orderState) => {
         throw new Error(`Too many attempts. Please wait ${waitTime} minutes before trying again.`);
       }
 
+      // Generate unique order ID
+      const orderId = `ORDER-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      setOrderId(orderId);
+
       // Process order
       const now = new Date();
       await sendToTelegram({
@@ -85,16 +90,25 @@ export const useOrderHandlers = (orderState) => {
         totalAmount: updateCart.calculateTotal(cart),
         transactionId,
         network,
-        deliveryLocation
+        deliveryLocation,
+        orderId
       });
 
       // Update order history
+      const orders = JSON.parse(localStorage.getItem('orders')) || {};
+      orders[orderId] = {
+        count: (orders[orderId]?.count || 0) + 1,
+        lastOrder: now,
+        status: 'Pending',
+        cart: cart,
+        totalAmount: updateCart.calculateTotal(cart),
+        customerPhone: customerPhone,
+        deliveryLocation: deliveryLocation
+      };
+      localStorage.setItem('orders', JSON.stringify(orders));
       setOrderHistory(prev => ({
         ...prev,
-        [customerPhone]: {
-          count: (prev[customerPhone]?.count || 0) + 1,
-          lastOrder: now
-        }
+        [orderId]: orders[orderId]
       }));
 
       setLastOrderTime(now);
@@ -115,7 +129,8 @@ export const useOrderHandlers = (orderState) => {
     orderHistory,
     blockedNumbers,
     lastOrderTime,
-    orderAttempts
+    orderAttempts,
+    setOrderId
   ]);
 
   const handleAddToCart = useCallback((item) => {

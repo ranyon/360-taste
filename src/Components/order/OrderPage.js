@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { Container, Row, Col, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Alert, Badge } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 
 // Components
 import CategorySection from './CategorySection';
@@ -22,7 +23,7 @@ import { BUSINESS_MOMO , validatePhoneNumber } from './orderUtils';
 import './OrderPage.css';
 
 const OrderPage = () => {
-  const { categoryId } = useParams();
+const { categoryId } = useParams();
   const orderState = useOrderState(categoryId);
   const { handlePayment, handleAddToCart, handleRemoveFromCart, calculateTotal } = useOrderHandlers(orderState);
 
@@ -46,6 +47,7 @@ const OrderPage = () => {
     setNetwork,
     setTransactionId,
     setDeliveryLocation,
+    orderId,
   } = orderState;
 
   useEffect(() => {
@@ -60,34 +62,44 @@ const OrderPage = () => {
     item.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const getOrderStatus = () => {
+    const orders = JSON.parse(localStorage.getItem('orders')) || {};
+    return orders[orderId]?.status || 'Pending';
+  };
+
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">Order Your Favorite Dishes</h1>
-      {orderPlaced && (
-        <Alert variant="success" onClose={() => setOrderPlaced(false)} dismissible>
-          Your order has been placed successfully! Delivery Will Arrive Shortly 
-        </Alert>
-      )}
+{orderPlaced && (
+  <Alert variant="success" onClose={() => setOrderPlaced(false)} dismissible>
+    Your order has been placed successfully! Delivery Will Arrive Shortly
+    <div className="mt-2">
+      <a href={`/order-status/${orderId}`} target="_blank" rel="noopener noreferrer">
+        Track Your Order
+      </a>
+    </div>
+  </Alert>
+)}
       <Row>
         <Col md={3}>
-          <CategorySection 
+          <CategorySection
             categories={categories}
             selectedCategory={selectedCategory}
             handleCategoryChange={handleCategoryChange}
           />
         </Col>
-        
+
         <Col md={6}>
-          <MenuItemsSection 
+          <MenuItemsSection
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             filteredMenuItems={filteredMenuItems}
             addToCart={handleAddToCart}
           />
         </Col>
-        
+
         <Col md={3}>
-          <CartSection 
+          <CartSection
             cart={cart}
             addToCart={handleAddToCart}
             removeFromCart={handleRemoveFromCart}
@@ -97,7 +109,7 @@ const OrderPage = () => {
         </Col>
       </Row>
 
-      <PaymentModal 
+      <PaymentModal
         showModal={showModal}
         setShowModal={setShowModal}
         errorMessage={errorMessage}
@@ -115,6 +127,14 @@ const OrderPage = () => {
         handlePayment={handlePayment}
         isSubmitting={isSubmitting}
       />
+<div className="text-center mt-3">
+  <Badge variant="info">Order Status: {getOrderStatus()}</Badge>
+  <div className="mt-2">
+    <a href={`/order-status/${orderId}`} target="_blank" rel="noopener noreferrer">
+      Track Your Order
+    </a>
+  </div>
+</div>
     </Container>
   );
 };
