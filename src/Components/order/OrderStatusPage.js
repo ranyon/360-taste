@@ -1,137 +1,111 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Row, Col, Alert } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
-import { Clock, ChefHat, Clipboard, CheckCircle } from 'lucide-react';
+import { Container, Card, Badge, ListGroup, Alert, Button, Spinner } from 'react-bootstrap';
+import { useParams, Link } from 'react-router-dom';
+import { useOrderData } from './useOrderData';
 
 const OrderStatusPage = () => {
   const { orderId } = useParams();
-  const [status, setStatus] = useState('Order Received');
-  const [message, setMessage] = useState('');
-  const [orderDetails, setOrderDetails] = useState(null);
+  const { order, status, loading, error, refreshStatus } = useOrderData(orderId);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchOrderDetails = () => {
-      const orders = JSON.parse(localStorage.getItem('orders')) || {};
-      if (orders[orderId]) {
-        setStatus(orders[orderId].status);
-        setOrderDetails(orders[orderId]);
-      } else {
-        setMessage('Order ID not found.');
-      }
-    };
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await refreshStatus();
+    setRefreshing(false);
+  };
 
-    fetchOrderDetails();
-    const interval = setInterval(fetchOrderDetails, 1000);
-    return () => clearInterval(interval);
-  }, [orderId]);
-
-  const steps = [
-    { id: 1, title: 'Order Received', subtitle: 'Order received', icon: Clock, color: '#4285f4' },
-    { id: 2, title: 'Preparing', subtitle: 'Being prepared', icon: ChefHat, color: 'grey' },
-    { id: 3, title: 'Ready', subtitle: 'Ready for pickup', icon: Clipboard, color: 'grey' },
-    { id: 4, title: 'Completed', subtitle: 'Order completed', icon: CheckCircle, color: 'grey' }
-  ];
-
-  const getCurrentStep = () => {
+  const getStatusBadgeVariant = (status) => {
     switch (status) {
-      case 'Order Received': return 1;
-      case 'Preparing': return 2;
-      case 'Ready': return 3;
-      case 'Completed': return 4;
-      default: return 1;
+      case 'Order Received': return 'info';
+      case 'Preparing': return 'primary';
+      case 'Out for Delivery': return 'warning';
+      case 'Delivered': return 'success';
+      case 'Cancelled': return 'danger';
+      default: return 'secondary';
     }
   };
 
-  const currentStep = getCurrentStep();
-
   return (
-    <Container className="py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="mb-0">Your Orders</h1>
-      </div>
-
-      {message && <Alert variant="info">{message}</Alert>}
-
-      <Card className="shadow-sm">
-        <Card.Body>
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <div>
-              <h5 className="mb-1">Order #{orderId}</h5>
-              <small className="text-muted">
-                {orderDetails?.timestamp ? new Date(orderDetails.timestamp).toLocaleString() : ''}
-              </small>
-            </div>
-          </div>
-
-          <div className="position-relative mb-5">
-            <div className="progress" style={{ height: '2px', backgroundColor: '#e9ecef' }}>
-              <div
-                className="progress-bar"
-                style={{
-                  width: `${(currentStep - 1) * 33.33}%`,
-                  backgroundColor: '#4285f4'
-                }}
-              />
-            </div>
-
-            <Row className="position-relative" style={{ marginTop: '-1.5rem' }}>
-              {steps.map((step, index) => (
-                <Col key={step.id} className="text-center">
-                  <div
-                    className={`rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2`}
-                    style={{
-                      width: '3rem',
-                      height: '3rem',
-                      backgroundColor: currentStep >= step.id ? '#4285f4' : '#e9ecef',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    <step.icon
-                      size={20}
-                      color={currentStep >= step.id ? 'white' : '#6c757d'}
-                    />
-                  </div>
-                  <div>
-                    <strong className="d-block" style={{ color: currentStep >= step.id ? '#4285f4' : '#6c757d' }}>
-                      {step.title}
-                    </strong>
-                    <small className="text-muted">{step.subtitle}</small>
-                    {step.time && <small className="d-block text-muted">{step.time}</small>}
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          </div>
-
-{orderDetails && (
-  <div className="border-top pt-3">
-    <div className="mb-3">
-      <h6 className="mb-1">Phone Number</h6>
-      <small className="text-muted">{orderDetails.customerPhone}</small>
-    </div>
-    <div className="mb-3">
-      <h6 className="mb-1">Delivery Location</h6>
-      <small className="text-muted">{orderDetails.deliveryLocation}</small>
-    </div>
-    {orderDetails.cart.map((item, index) => (
-      <div key={index} className="d-flex justify-content-between align-items-center mb-2">
-        <div>
-          <h6 className="mb-1">{item.name}</h6>
-          <small className="text-muted">Quantity: {item.quantity}</small>
+    <Container className="py-5">
+      <Link to="/" className="btn btn-outline-secondary mb-4">← Back to Menu</Link>
+      
+      <h1 className="text-center mb-4">Order Status</h1>
+      
+      {error && (
+        <Alert variant="danger">{error}</Alert>
+      )}
+      
+      {loading ? (
+        <div className="text-center py-5">
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
         </div>
-        <h6 className="mb-0">₵{(item.price * item.quantity).toFixed(2)}</h6>
-      </div>
-    ))}
-    <div className="border-top mt-3 pt-3">
-      <div className="d-flex justify-content-between align-items-center">
-        <h6 className="mb-0">Total</h6>
-<h6 className="mb-0">₵{orderDetails.cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}</h6>
-      </div>
-    </div>
-  </div>
-)}
-        </Card.Body>
-      </Card>
+      ) : order ? (
+        <Card className="shadow-sm">
+          <Card.Header as="h5" className="d-flex justify-content-between align-items-center">
+            <span>Order #{orderId}</span>
+            <Badge bg={getStatusBadgeVariant(status)} className="p-2">{status}</Badge>
+          </Card.Header>
+          
+          <Card.Body>
+            <div className="mb-4">
+              {/* <h6 className="mb-3">Customer Details</h6>
+              <ListGroup variant="flush">
+                <ListGroup.Item>Name: {order.customerName || 'N/A'}</ListGroup.Item>
+                <ListGroup.Item>Phone: {order.customerPhone}</ListGroup.Item>
+                <ListGroup.Item>Email: {order.customerEmail || 'N/A'}</ListGroup.Item>
+                <ListGroup.Item>Delivery Location: {order.deliveryLocation}</ListGroup.Item>
+              </ListGroup> */}
+            </div>
+            
+            <div className="mb-4">
+              <h6 className="mb-3">Order Items</h6>
+              {order.cart && order.cart.length > 0 ? (
+                <ListGroup variant="flush">
+                  {order.cart.map((item, index) => (
+                    <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <span className="fw-bold">{item.name}</span>
+                        {item.quantity > 1 && <span className="text-muted ms-2">× {item.quantity}</span>}
+                      </div>
+                      <span>GHS {(item.price * item.quantity).toFixed(2)}</span>
+                    </ListGroup.Item>
+                  ))}
+                </ListGroup>
+              ) : (
+                <Alert variant="warning">No items found in this order</Alert>
+              )}
+            </div>
+            
+            <div className="mb-4">
+              <h6 className="mb-3">Payment Information</h6>
+              <ListGroup variant="flush">
+                <ListGroup.Item>Total Amount: GHS {order.totalAmount}</ListGroup.Item>
+                <ListGroup.Item>Payment Method: {order.network}</ListGroup.Item>
+                <ListGroup.Item>Transaction ID: {order.transactionId}</ListGroup.Item>
+                <ListGroup.Item>
+                  Order Date: {new Date(order.timestamp).toLocaleString()}
+                </ListGroup.Item>
+              </ListGroup>
+            </div>
+          </Card.Body>
+          
+          <Card.Footer className="text-center">
+            <Button 
+              variant="primary" 
+              onClick={handleRefresh} 
+              disabled={refreshing}
+            >
+              {refreshing ? 'Refreshing...' : 'Refresh Status'}
+            </Button>
+          </Card.Footer>
+        </Card>
+      ) : (
+        <Alert variant="warning">
+          No order found with ID: {orderId}. Please check the order ID and try again.
+        </Alert>
+      )}
     </Container>
   );
 };

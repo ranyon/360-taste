@@ -8,6 +8,7 @@ import Menu from './Components/Menu/Menu';
 import OrderPage from './Components/order/OrderPage';
 import OrderStatusPage from './Components/order/OrderStatusPage';
 import UpdateOrderStatusPage from './Components/order/UpdateOrderStatusPage';
+import CartPage from './Components/order/CartPage';
 import Footer from './Components/Footer/Footer';
 import './App.css';
 
@@ -57,6 +58,7 @@ function App() {
             <Route path="/order/:categoryId" element={<OrderPage />} />
             <Route path="/order-status/:orderId" element={<OrderStatusPage />} />
             <Route path="/updateorderstatus" element={<UpdateOrderStatusPage />} />
+            <Route path="/cart" element={<CartPage />} />
           </Routes>
           <div data-aos="fade-up" id="contact">
             <Footer />

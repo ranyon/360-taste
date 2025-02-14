@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { Container, Row, Col, Alert, Badge } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Container, Row, Col, Alert, Badge, Button } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Components
 import CategorySection from './CategorySection';
@@ -12,20 +12,23 @@ import PaymentModal from './PaymentModal';
 // Hooks
 import { useOrderState } from './useOrderState';
 import { useOrderHandlers } from './useOrderHandler';
+import { getOrderStatus } from './orderUtils';
 
 // Data
 import { categories, menuItems } from './menuData';
 
-// Constants
-import { BUSINESS_MOMO , validatePhoneNumber } from './orderUtils';
-
 // Styles
 import './OrderPage.css';
 
+// Constants
+const BUSINESS_MOMO = "0598942315"; // Replace with your actual business mobile money number
+
 const OrderPage = () => {
-const { categoryId } = useParams();
+  const { categoryId } = useParams();
   const orderState = useOrderState(categoryId);
   const { handlePayment, handleAddToCart, handleRemoveFromCart, calculateTotal } = useOrderHandlers(orderState);
+  const [currentStatus, setCurrentStatus] = useState('Pending');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const {
     selectedCategory,
@@ -56,30 +59,49 @@ const { categoryId } = useParams();
     }
   }, [categoryId, handleCategoryChange]);
 
+  useEffect(() => {
+    if (orderId) {
+      refreshOrderStatus();
+    }
+  }, [orderId]);
+
+  const refreshOrderStatus = async () => {
+    if (!orderId) return;
+    
+    try {
+      setIsRefreshing(true);
+      const status = await getOrderStatus(orderId);
+      setCurrentStatus(status || 'Pending');
+    } catch (err) {
+      console.error('Error refreshing status:', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   const filteredMenuItems = menuItems.filter(item =>
     (item.category === selectedCategory) &&
     (item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const getOrderStatus = () => {
-    const orders = JSON.parse(localStorage.getItem('orders')) || {};
-    return orders[orderId]?.status || 'Pending';
+  const trackOrderLink = () => {
+    return orderId ? `/order-status/${orderId}` : '#';
   };
 
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">Order Your Favorite Dishes</h1>
-{orderPlaced && (
-  <Alert variant="success" onClose={() => setOrderPlaced(false)} dismissible>
-    Your order has been placed successfully! Delivery Will Arrive Shortly
-    <div className="mt-2">
-      <a href={`/order-status/${orderId}`} target="_blank" rel="noopener noreferrer">
-        Track Your Order
-      </a>
-    </div>
-  </Alert>
-)}
+      {orderPlaced && (
+        <Alert variant="success" onClose={() => setOrderPlaced(false)} dismissible>
+          Your order has been placed successfully! Delivery Will Arrive Shortly
+          <div className="mt-2">
+            <a href={trackOrderLink()} target="_blank" rel="noopener noreferrer">
+              Track Your Order
+            </a>
+          </div>
+        </Alert>
+      )}
       <Row>
         <Col md={3}>
           <CategorySection
@@ -119,22 +141,38 @@ const { categoryId } = useParams();
         setNetwork={setNetwork}
         customerPhone={customerPhone}
         setCustomerPhone={setCustomerPhone}
-        validatePhoneNumber={validatePhoneNumber}
-        transactionId={transactionId}
-        setTransactionId={setTransactionId}
-        deliveryLocation={deliveryLocation}
-        setDeliveryLocation={setDeliveryLocation}
         handlePayment={handlePayment}
         isSubmitting={isSubmitting}
+        cartItems={cart}
+        orderId={orderId}
+        // Note: validatePhoneNumber is imported directly in PaymentModal.js
+        // Note: deliveryLocation and setDeliveryLocation are handled internally in PaymentModal
       />
-<div className="text-center mt-3">
-  <Badge variant="info">Order Status: {getOrderStatus()}</Badge>
-  <div className="mt-2">
-    <a href={`/order-status/${orderId}`} target="_blank" rel="noopener noreferrer">
-      Track Your Order
-    </a>
-  </div>
-</div>
+      
+      {orderId && (
+        <div className="text-center mt-4 p-3 border rounded">
+          <h4>Current Order</h4>
+          <Badge variant="info" className="p-2 mb-2">Order Status: {currentStatus}</Badge>
+          <div className="d-flex justify-content-center mt-2">
+            <Button 
+              variant="outline-secondary" 
+              size="sm" 
+              onClick={refreshOrderStatus}
+              disabled={isRefreshing}
+              className="me-2"
+            >
+              {isRefreshing ? 'Refreshing...' : 'Refresh Status'}
+            </Button>
+            <a href={trackOrderLink()} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn btn-primary btn-sm"
+            >
+              Track Order Details
+            </a>
+          </div>
+        </div>
+      )}
     </Container>
   );
 };
