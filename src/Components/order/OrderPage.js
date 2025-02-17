@@ -13,6 +13,7 @@ import PaymentModal from './PaymentModal';
 import { useOrderState } from './useOrderState';
 import { useOrderHandlers } from './useOrderHandler';
 import { getOrderStatus } from './orderUtils';
+import { v4 as uuidv4 } from 'uuid';
 
 // Data
 import { categories, menuItems } from './menuData';
@@ -24,6 +25,7 @@ import './OrderPage.css';
 const BUSINESS_MOMO = "0598942315"; // Replace with your actual business mobile money number
 
 const OrderPage = () => {
+  const generateOrderId = () => uuidv4();
   const { categoryId } = useParams();
   const orderState = useOrderState(categoryId);
   const { handlePayment, handleAddToCart, handleRemoveFromCart, calculateTotal } = useOrderHandlers(orderState);
@@ -51,6 +53,7 @@ const OrderPage = () => {
     setTransactionId,
     setDeliveryLocation,
     orderId,
+    setOrderId
   } = orderState;
 
   useEffect(() => {
@@ -67,7 +70,7 @@ const OrderPage = () => {
 
   const refreshOrderStatus = async () => {
     if (!orderId) return;
-    
+
     try {
       setIsRefreshing(true);
       const status = await getOrderStatus(orderId);
@@ -145,27 +148,28 @@ const OrderPage = () => {
         isSubmitting={isSubmitting}
         cartItems={cart}
         orderId={orderId}
+        setOrderId={setOrderId}
         // Note: validatePhoneNumber is imported directly in PaymentModal.js
         // Note: deliveryLocation and setDeliveryLocation are handled internally in PaymentModal
       />
-      
+
       {orderId && (
         <div className="text-center mt-4 p-3 border rounded">
           <h4>Current Order</h4>
           <Badge variant="info" className="p-2 mb-2">Order Status: {currentStatus}</Badge>
           <div className="d-flex justify-content-center mt-2">
-            <Button 
-              variant="outline-secondary" 
-              size="sm" 
+            <Button
+              variant="outline-secondary"
+              size="sm"
               onClick={refreshOrderStatus}
               disabled={isRefreshing}
               className="me-2"
             >
               {isRefreshing ? 'Refreshing...' : 'Refresh Status'}
             </Button>
-            <a href={trackOrderLink()} 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a href={trackOrderLink()}
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn btn-primary btn-sm"
             >
               Track Order Details

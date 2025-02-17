@@ -1,4 +1,4 @@
-import { supabase } from '../../supabaseClient';
+import { supabase } from '../../supabaseClient.js';
 import axios from 'axios';
 
 // Constants
@@ -57,13 +57,13 @@ export const createNewOrder = async (orderData) => {
 
     console.log('Order created successfully:', createdOrder);
 
-    // Store order ID in localStorage for client-side tracking
-    const orders = JSON.parse(localStorage.getItem('orders')) || {};
-    orders[orderId] = {
-      status: 'Order Received',
-      timestamp: new Date().toISOString()
-    };
-    localStorage.setItem('orders', JSON.stringify(orders));
+// Store order ID in localStorage for client-side tracking
+// const orders = JSON.parse(localStorage.getItem('orders')) || {};
+// orders[orderId] = {
+//   status: 'Order Received',
+//   timestamp: new Date().toISOString()
+// };
+// localStorage.setItem('orders', JSON.stringify(orders));
 
     return orderId;
   } catch (error) {
@@ -159,16 +159,16 @@ export const updateOrderStatus = async (orderId, newStatus) => {
 
     console.log('Order status updated successfully:', data);
 
-    // Update local storage to reflect the change
-    const orders = JSON.parse(localStorage.getItem('orders')) || {};
-    if (orders[orderId]) {
-      orders[orderId] = {
-        ...orders[orderId],
-        status: newStatus,
-        lastUpdated: new Date().toISOString()
-      };
-      localStorage.setItem('orders', JSON.stringify(orders));
-    }
+// Update local storage to reflect the change
+// const orders = JSON.parse(localStorage.getItem('orders')) || {};
+// if (orders[orderId]) {
+//   orders[orderId] = {
+//     ...orders[orderId],
+//     status: newStatus,
+//     lastUpdated: new Date().toISOString()
+//   };
+//   localStorage.setItem('orders', JSON.stringify(orders));
+// }
 
     return true;
   } catch (error) {
@@ -207,16 +207,16 @@ export const updateOrder = async (orderId, updateData) => {
 
     console.log('Order updated successfully:', data);
 
-    // Update localStorage if needed
-    const orders = JSON.parse(localStorage.getItem('orders')) || {};
-    if (orders[orderId]) {
-      orders[orderId] = {
-        ...orders[orderId],
-        ...updateData,
-        lastUpdated: new Date().toISOString()
-      };
-      localStorage.setItem('orders', JSON.stringify(orders));
-    }
+// Update localStorage if needed
+// const orders = JSON.parse(localStorage.getItem('orders')) || {};
+// if (orders[orderId]) {
+//   orders[orderId] = {
+//     ...orders[orderId],
+//     ...updateData,
+//     lastUpdated: new Date().toISOString()
+//   };
+//   localStorage.setItem('orders', JSON.stringify(orders));
+// }
 
     return true;
   } catch (error) {
@@ -242,20 +242,20 @@ export const getOrderStatus = async (orderId) => {
         orderId
       });
       
-      // Fall back to localStorage
-      const orders = JSON.parse(localStorage.getItem('orders')) || {};
-      const localStatus = orders[orderId]?.status;
-      console.log('Using fallback status from localStorage:', localStatus);
-      return localStatus || 'Pending';
+// Fall back to localStorage
+// const orders = JSON.parse(localStorage.getItem('orders')) || {};
+// const localStatus = orders[orderId]?.status;
+// console.log('Using fallback status from localStorage:', localStatus);
+// return localStatus || 'Pending';
     }
 
     console.log('Order status fetched successfully:', data);
     return data.status;
   } catch (error) {
     console.error('Error in getOrderStatus:', error);
-    // Fall back to localStorage as a last resort
-    const orders = JSON.parse(localStorage.getItem('orders')) || {};
-    return orders[orderId]?.status || 'Pending';
+// Fall back to localStorage as a last resort
+// const orders = JSON.parse(localStorage.getItem('orders')) || {};
+// return orders[orderId]?.status || 'Pending';
   }
 };
 

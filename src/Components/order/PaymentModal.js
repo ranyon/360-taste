@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Modal, Button, Alert } from 'react-bootstrap';
 import { PaystackButton } from 'react-paystack';
 import { sendToTelegram, validatePhoneNumber, updateOrder } from './orderUtils';
+import { v4 as uuidv4 } from 'uuid';
 
 const PaymentModal = ({
+  setOrderId,
   showModal,
   setShowModal,
   errorMessage,
@@ -49,13 +51,16 @@ const PaymentModal = ({
   };
 
   const canShowPaystackButton = () => {
-    return customerName.trim() && 
-           validatePhoneNumber(customerPhone) && 
-           deliveryLocation.trim().length >= 10 && 
+return customerName.trim() &&
+validatePhoneNumber(customerPhone) &&
+deliveryLocation.trim().length >= 10 &&
            customerEmail.trim().includes('@');
   };
 
+  const generateOrderId = () => uuidv4();
   const handlePaystackSuccess = async (reference) => {
+  const newOrderId = generateOrderId();
+  setOrderId(newOrderId);
     if (!validateForm()) {
       return;
     }
