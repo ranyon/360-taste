@@ -1,6 +1,6 @@
 import { supabase } from '../../supabaseClient.js';
 import axios from 'axios';
-
+//Main
 // Constants
 export const TELEGRAM_BOT_TOKEN = '7375994825:AAGyNzhEcLHAP4V8msySqi3SM63q_1HOzGg';
 export const TELEGRAM_CHAT_ID = '-1002409004462';
@@ -11,253 +11,253 @@ export const generateOrderId = () => {
   return `ORD${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
 };
 
-export const createNewOrder = async (orderData) => {
-  try {
-    const orderId = generateOrderId();
+// export const createNewOrder = async (orderData) => {
+//   try {
+//     const orderId = generateOrderId();
 
-    // Format cart items as JSON
-    const formattedOrderData = {
-      ...orderData,
-      cart: JSON.stringify(orderData.cart),
-      status: 'Order Received',
-      timestamp: new Date().toISOString(),
-      lastUpdated: new Date().toISOString()
-    };
+//     // Format cart items as JSON
+//     const formattedOrderData = {
+//       ...orderData,
+//       cart: JSON.stringify(orderData.cart),
+//       status: 'Order Received',
+//       timestamp: new Date().toISOString(),
+//       lastUpdated: new Date().toISOString()
+//     };
 
-    console.log('Attempting to create order:', { orderId, ...formattedOrderData });
+//     console.log('Attempting to create order:', { orderId, ...formattedOrderData });
 
-    const { data, error } = await supabase
-      .from('orders')
-      .insert([
-        {
-          orderId,
-          ...formattedOrderData
-        }
-      ]);
+//     const { data, error } = await supabase
+//       .from('orders')
+//       .insert([
+//         {
+//           orderId,
+//           ...formattedOrderData
+//         }
+//       ]);
 
-    if (error) {
-      console.error('Error creating order:', {
-        error,
-        orderId,
-        formattedOrderData
-      });
-      throw new Error(`Failed to create order in database: ${error.message}`);
-    }
+//     if (error) {
+//       console.error('Error creating order:', {
+//         error,
+//         orderId,
+//         formattedOrderData
+//       });
+//       throw new Error(`Failed to create order in database: ${error.message}`);
+//     }
 
-    // Fetch the created order to return it
-    const { data: createdOrder, error: fetchError } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('orderId', orderId)
-      .single();
+//     // Fetch the created order to return it
+//     const { data: createdOrder, error: fetchError } = await supabase
+//       .from('orders')
+//       .select('*')
+//       .eq('orderId', orderId)
+//       .single();
 
-    if (fetchError) {
-      console.error('Error fetching created order:', fetchError);
-    }
+//     if (fetchError) {
+//       console.error('Error fetching created order:', fetchError);
+//     }
 
-    console.log('Order created successfully:', createdOrder);
+//     console.log('Order created successfully:', createdOrder);
 
-// Store order ID in localStorage for client-side tracking
-// const orders = JSON.parse(localStorage.getItem('orders')) || {};
-// orders[orderId] = {
-//   status: 'Order Received',
-//   timestamp: new Date().toISOString()
+//     // Store order ID in localStorage for client-side tracking
+//     // const orders = JSON.parse(localStorage.getItem('orders')) || {};
+//     // orders[orderId] = {
+//     //   status: 'Order Received',
+//     //   timestamp: new Date().toISOString()
+//     // };
+//     // localStorage.setItem('orders', JSON.stringify(orders));
+
+//     return orderId;
+//   } catch (error) {
+//     console.error('Error in createNewOrder:', error);
+//     throw error;
+//   }
 // };
-// localStorage.setItem('orders', JSON.stringify(orders));
 
-    return orderId;
-  } catch (error) {
-    console.error('Error in createNewOrder:', error);
-    throw error;
-  }
-};
+// export const getOrder = async (orderId) => {
+//   try {
+//     console.log('Fetching order:', orderId);
 
-export const getOrder = async (orderId) => {
-  try {
-    console.log('Fetching order:', orderId);
+//     // First try a simple connection test
+//     const testQuery = await supabase
+//       .from('orders')
+//       .select('orderId')
+//       .limit(1);
 
-    // First try a simple connection test
-    const testQuery = await supabase
-      .from('orders')
-      .select('orderId')
-      .limit(1);
-    
-    console.log('Connection test result:', testQuery);
+//     console.log('Connection test result:', testQuery);
 
-    if (testQuery.error) {
-      throw new Error(`Database connection error: ${testQuery.error.message}`);
-    }
+//     if (testQuery.error) {
+//       throw new Error(`Database connection error: ${testQuery.error.message}`);
+//     }
 
-    // Proceed with actual order fetch
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('orderId', orderId);
+//     // Proceed with actual order fetch
+//     const { data, error } = await supabase
+//       .from('orders')
+//       .select('*')
+//       .eq('orderId', orderId);
 
-    if (error) {
-      console.error('Error fetching order:', {
-        error,
-        orderId
-      });
-      throw new Error(`Failed to fetch order: ${error.message}`);
-    }
+//     if (error) {
+//       console.error('Error fetching order:', {
+//         error,
+//         orderId
+//       });
+//       throw new Error(`Failed to fetch order: ${error.message}`);
+//     }
 
-    // Check if any orders were returned
-    if (!data || data.length === 0) {
-      throw new Error(`No order found with ID: ${orderId}`);
-    }
+//     // Check if any orders were returned
+//     if (!data || data.length === 0) {
+//       throw new Error(`No order found with ID: ${orderId}`);
+//     }
 
-    // Take the first order if multiple exist (shouldn't happen with proper orderId)
-    const orderData = data[0];
+//     // Take the first order if multiple exist (shouldn't happen with proper orderId)
+//     const orderData = data[0];
 
-    // Parse cart from JSON string to object
-    if (orderData && typeof orderData.cart === 'string') {
-      orderData.cart = JSON.parse(orderData.cart);
-    }
+//     // Parse cart from JSON string to object
+//     if (orderData && typeof orderData.cart === 'string') {
+//       orderData.cart = JSON.parse(orderData.cart);
+//     }
 
-    console.log('Order fetched successfully:', orderData);
-    return orderData;
-  } catch (error) {
-    console.error('Error in getOrder:', error);
-    
-    // Try to get from localStorage as fallback
-    try {
-      const orders = JSON.parse(localStorage.getItem('orders')) || {};
-      if (orders[orderId]) {
-        console.log('Found order in localStorage:', orders[orderId]);
-        return orders[orderId];
-      }
-    } catch (localStorageError) {
-      console.error('Error reading from localStorage:', localStorageError);
-    }
-    
-    throw error;
-  }
-};
+//     console.log('Order fetched successfully:', orderData);
+//     return orderData;
+//   } catch (error) {
+//     console.error('Error in getOrder:', error);
 
-export const updateOrderStatus = async (orderId, newStatus) => {
-  try {
-    console.log('Updating order status:', { orderId, newStatus });
+//     // Try to get from localStorage as fallback
+//     try {
+//       const orders = JSON.parse(localStorage.getItem('orders')) || {};
+//       if (orders[orderId]) {
+//         console.log('Found order in localStorage:', orders[orderId]);
+//         return orders[orderId];
+//       }
+//     } catch (localStorageError) {
+//       console.error('Error reading from localStorage:', localStorageError);
+//     }
 
-    const { data, error } = await supabase
-      .from('orders')
-      .update({
-        status: newStatus,
-        lastUpdated: new Date().toISOString()
-      })
-      .eq('orderId', orderId)
-      .select();
+//     throw error;
+//   }
+// };
 
-    if (error) {
-      console.error('Error updating order status:', {
-        error,
-        orderId,
-        newStatus
-      });
-      throw new Error('Failed to update order status');
-    }
+// export const updateOrderStatus = async (orderId, newStatus) => {
+//   try {
+//     console.log('Updating order status:', { orderId, newStatus });
 
-    console.log('Order status updated successfully:', data);
+//     const { data, error } = await supabase
+//       .from('orders')
+//       .update({
+//         status: newStatus,
+//         lastUpdated: new Date().toISOString()
+//       })
+//       .eq('orderId', orderId)
+//       .select();
 
-// Update local storage to reflect the change
-// const orders = JSON.parse(localStorage.getItem('orders')) || {};
-// if (orders[orderId]) {
-//   orders[orderId] = {
-//     ...orders[orderId],
-//     status: newStatus,
-//     lastUpdated: new Date().toISOString()
-//   };
-//   localStorage.setItem('orders', JSON.stringify(orders));
-// }
+//     if (error) {
+//       console.error('Error updating order status:', {
+//         error,
+//         orderId,
+//         newStatus
+//       });
+//       throw new Error('Failed to update order status');
+//     }
 
-    return true;
-  } catch (error) {
-    console.error('Error in updateOrderStatus:', error);
-    throw error;
-  }
-};
+//     console.log('Order status updated successfully:', data);
 
-export const updateOrder = async (orderId, updateData) => {
-  try {
-    console.log('Updating order:', { orderId, updateData });
+//     // Update local storage to reflect the change
+//     // const orders = JSON.parse(localStorage.getItem('orders')) || {};
+//     // if (orders[orderId]) {
+//     //   orders[orderId] = {
+//     //     ...orders[orderId],
+//     //     status: newStatus,
+//     //     lastUpdated: new Date().toISOString()
+//     //   };
+//     //   localStorage.setItem('orders', JSON.stringify(orders));
+//     // }
 
-    // If cart is present in updateData and is an object, stringify it
-    const formattedUpdateData = { ...updateData };
-    if (formattedUpdateData.cart && typeof formattedUpdateData.cart === 'object') {
-      formattedUpdateData.cart = JSON.stringify(formattedUpdateData.cart);
-    }
+//     return true;
+//   } catch (error) {
+//     console.error('Error in updateOrderStatus:', error);
+//     throw error;
+//   }
+// };
 
-    const { data, error } = await supabase
-      .from('orders')
-      .update({
-        ...formattedUpdateData,
-        lastUpdated: new Date().toISOString()
-      })
-      .eq('orderId', orderId)
-      .select();
+// export const updateOrder = async (orderId, updateData) => {
+//   try {
+//     console.log('Updating order:', { orderId, updateData });
 
-    if (error) {
-      console.error('Error updating order:', {
-        error,
-        orderId,
-        updateData
-      });
-      throw new Error('Failed to update order');
-    }
+//     // If cart is present in updateData and is an object, stringify it
+//     const formattedUpdateData = { ...updateData };
+//     if (formattedUpdateData.cart && typeof formattedUpdateData.cart === 'object') {
+//       formattedUpdateData.cart = JSON.stringify(formattedUpdateData.cart);
+//     }
 
-    console.log('Order updated successfully:', data);
+//     const { data, error } = await supabase
+//       .from('orders')
+//       .update({
+//         ...formattedUpdateData,
+//         lastUpdated: new Date().toISOString()
+//       })
+//       .eq('orderId', orderId)
+//       .select();
 
-// Update localStorage if needed
-// const orders = JSON.parse(localStorage.getItem('orders')) || {};
-// if (orders[orderId]) {
-//   orders[orderId] = {
-//     ...orders[orderId],
-//     ...updateData,
-//     lastUpdated: new Date().toISOString()
-//   };
-//   localStorage.setItem('orders', JSON.stringify(orders));
-// }
+//     if (error) {
+//       console.error('Error updating order:', {
+//         error,
+//         orderId,
+//         updateData
+//       });
+//       throw new Error('Failed to update order');
+//     }
 
-    return true;
-  } catch (error) {
-    console.error('Error in updateOrder:', error);
-    throw error;
-  }
-};
+//     console.log('Order updated successfully:', data);
 
-export const getOrderStatus = async (orderId) => {
-  try {
-    console.log('Fetching order status:', orderId);
-    
-    // Try to get from Supabase first
-    const { data, error } = await supabase
-      .from('orders')
-      .select('status')
-      .eq('orderId', orderId)
-      .single();
+//     // Update localStorage if needed
+//     // const orders = JSON.parse(localStorage.getItem('orders')) || {};
+//     // if (orders[orderId]) {
+//     //   orders[orderId] = {
+//     //     ...orders[orderId],
+//     //     ...updateData,
+//     //     lastUpdated: new Date().toISOString()
+//     //   };
+//     //   localStorage.setItem('orders', JSON.stringify(orders));
+//     // }
 
-    if (error) {
-      console.error('Error fetching order status from Supabase:', {
-        error,
-        orderId
-      });
-      
-// Fall back to localStorage
-// const orders = JSON.parse(localStorage.getItem('orders')) || {};
-// const localStatus = orders[orderId]?.status;
-// console.log('Using fallback status from localStorage:', localStatus);
-// return localStatus || 'Pending';
-    }
+//     return true;
+//   } catch (error) {
+//     console.error('Error in updateOrder:', error);
+//     throw error;
+//   }
+// };
 
-    console.log('Order status fetched successfully:', data);
-    return data.status;
-  } catch (error) {
-    console.error('Error in getOrderStatus:', error);
-// Fall back to localStorage as a last resort
-// const orders = JSON.parse(localStorage.getItem('orders')) || {};
-// return orders[orderId]?.status || 'Pending';
-  }
-};
+// export const getOrderStatus = async (orderId) => {
+//   try {
+//     console.log('Fetching order status:', orderId);
+
+//     // Try to get from Supabase first
+//     const { data, error } = await supabase
+//       .from('orders')
+//       .select('status')
+//       .eq('orderId', orderId)
+//       .single();
+
+//     if (error) {
+//       console.error('Error fetching order status from Supabase:', {
+//         error,
+//         orderId
+//       });
+
+//       // Fall back to localStorage
+//       // const orders = JSON.parse(localStorage.getItem('orders')) || {};
+//       // const localStatus = orders[orderId]?.status;
+//       // console.log('Using fallback status from localStorage:', localStatus);
+//       // return localStatus || 'Pending';
+//     }
+
+//     console.log('Order status fetched successfully:', data);
+//     return data.status;
+//   } catch (error) {
+//     console.error('Error in getOrderStatus:', error);
+//     // Fall back to localStorage as a last resort
+//     // const orders = JSON.parse(localStorage.getItem('orders')) || {};
+//     // return orders[orderId]?.status || 'Pending';
+//   }
+// };
 
 // Validation helpers
 export const validatePhoneNumber = (phone) => {

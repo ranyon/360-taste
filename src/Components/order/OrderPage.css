@@ -49,3 +49,90 @@
     position: sticky;
     top: 20px;
   }
+
+  /* Add to your existing OrderPage.css */
+
+/* Animation for the floating cart button */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.floating-cart-button {
+  transition: all 0.3s ease;
+}
+
+/* Add a subtle pulse animation when the cart first appears or when items are added */
+.floating-cart-button.new-item {
+  animation: pulse 0.5s ease-in-out;
+}
+
+/* Hide the floating button on desktop */
+@media (min-width: 768px) {
+  .floating-cart-button {
+    display: none !important;
+  }
+}
+
+
+/* Add to your existing OrderPage.css */
+
+/* Animation for the floating cart button */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.floating-cart-button {
+  transition: all 0.3s ease;
+}
+
+/* Add a subtle pulse animation when the cart first appears or when items are added */
+.floating-cart-button.new-item {
+  animation: pulse 0.5s ease-in-out;
+}
+
+/* Hide the floating button on desktop */
+@media (min-width: 768px) {
+  .floating-cart-button {
+    display: none !important;
+  }
+}
+
+/* Back to top button styles */
+.back-to-top-button {
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.back-to-top-button:hover {
+  opacity: 1 !important;
+  transform: translateY(-5px);
+}
+
+/* Make sure buttons don't interfere with each other on mobile */
+@media (max-width: 767px) {
+  .back-to-top-button {
+    bottom: 20px !important;
+    left: 20px !important;
+  }
+  
+  .floating-cart-button {
+    bottom: 20px !important;
+    right: 20px !important;
+  }
+}
+

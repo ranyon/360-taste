@@ -27,10 +27,6 @@ const NavbarComponent = () => {
             <Nav.Link as={Link} to="/#menu">Menu</Nav.Link>
             <Nav.Link as={Link} to="/order">Order</Nav.Link>
             <Nav.Link as={Link} to="/#contact">Contact</Nav.Link>
-            <Nav.Link as={Link} to="/cart">
-              <ShoppingCart size={24} />
-              {cart.length > 0 && <Badge pill variant="danger">{cart.length}</Badge>}
-            </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

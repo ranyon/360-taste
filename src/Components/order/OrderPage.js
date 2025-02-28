@@ -8,11 +8,12 @@ import CategorySection from './CategorySection';
 import MenuItemsSection from './MenuItemsSection';
 import CartSection from './CartSection';
 import PaymentModal from './PaymentModal';
+import FloatingCartButton from './FloatingCartButton';
+import BackToTopButton from './BackToTopButton'; // Import the new component
 
 // Hooks
 import { useOrderState } from './useOrderState';
 import { useOrderHandlers } from './useOrderHandler';
-import { getOrderStatus } from './orderUtils';
 import { v4 as uuidv4 } from 'uuid';
 
 // Data
@@ -31,6 +32,7 @@ const OrderPage = () => {
   const { handlePayment, handleAddToCart, handleRemoveFromCart, calculateTotal } = useOrderHandlers(orderState);
   const [currentStatus, setCurrentStatus] = useState('Pending');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showThankYou, setShowThankYou] = useState(false);
 
   const {
     selectedCategory,
@@ -53,7 +55,8 @@ const OrderPage = () => {
     setTransactionId,
     setDeliveryLocation,
     orderId,
-    setOrderId
+    setOrderId,
+    clearCart // Get clearCart from orderState
   } = orderState;
 
   useEffect(() => {
@@ -63,23 +66,14 @@ const OrderPage = () => {
   }, [categoryId, handleCategoryChange]);
 
   useEffect(() => {
-    if (orderId) {
-      refreshOrderStatus();
+    if (orderPlaced) {
+      setShowThankYou(true);
     }
-  }, [orderId]);
+  }, [orderPlaced]);
 
-  const refreshOrderStatus = async () => {
-    if (!orderId) return;
-
-    try {
-      setIsRefreshing(true);
-      const status = await getOrderStatus(orderId);
-      setCurrentStatus(status || 'Pending');
-    } catch (err) {
-      console.error('Error refreshing status:', err);
-    } finally {
-      setIsRefreshing(false);
-    }
+  const handleDismissThankYou = () => {
+    setShowThankYou(false);
+    setOrderPlaced(false);
   };
 
   const filteredMenuItems = menuItems.filter(item =>
@@ -95,16 +89,19 @@ const OrderPage = () => {
   return (
     <Container className="py-5">
       <h1 className="text-center mb-5">Order Your Favorite Dishes</h1>
-      {orderPlaced && (
-        <Alert variant="success" onClose={() => setOrderPlaced(false)} dismissible>
-          Your order has been placed successfully! Delivery Will Arrive Shortly
-          <div className="mt-2">
-            <a href={trackOrderLink()} target="_blank" rel="noopener noreferrer">
-              Track Your Order
-            </a>
-          </div>
+      
+      {showThankYou && (
+        <Alert variant="success" className="text-center mb-4" onClose={handleDismissThankYou} dismissible>
+          <h4 className="alert-heading">Thank You for Your Order!</h4>
+          <p>We appreciate your business. Your order has been received and is being processed.</p>
+          <p className="mb-0">Order ID: {orderId}</p>
+          <hr />
+          <p className="mb-0">
+            You can track your order status using the ID above. We'll start preparing your delicious meal right away!
+          </p>
         </Alert>
       )}
+
       <Row>
         <Col md={3}>
           <CategorySection
@@ -149,34 +146,18 @@ const OrderPage = () => {
         cartItems={cart}
         orderId={orderId}
         setOrderId={setOrderId}
-        // Note: validatePhoneNumber is imported directly in PaymentModal.js
-        // Note: deliveryLocation and setDeliveryLocation are handled internally in PaymentModal
+        setOrderPlaced={setOrderPlaced}
+        clearCart={clearCart} // Pass the clearCart function to the PaymentModal
       />
 
-      {orderId && (
-        <div className="text-center mt-4 p-3 border rounded">
-          <h4>Current Order</h4>
-          <Badge variant="info" className="p-2 mb-2">Order Status: {currentStatus}</Badge>
-          <div className="d-flex justify-content-center mt-2">
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={refreshOrderStatus}
-              disabled={isRefreshing}
-              className="me-2"
-            >
-              {isRefreshing ? 'Refreshing...' : 'Refresh Status'}
-            </Button>
-            <a href={trackOrderLink()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary btn-sm"
-            >
-              Track Order Details
-            </a>
-          </div>
-        </div>
-      )}
+      {/* Add the floating cart button component */}
+      <FloatingCartButton 
+        cart={cart} 
+        totalPrice={calculateTotal()}
+      />
+      
+      {/* Add the back to top button */}
+      <BackToTopButton />
     </Container>
   );
 };

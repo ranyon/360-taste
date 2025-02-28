@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { ShoppingCart, Plus, Minus } from 'lucide-react';
+//MAIN
 
 const CartSection = ({ 
   cart, 

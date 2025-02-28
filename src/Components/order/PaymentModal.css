@@ -1,0 +1,12 @@
+.btn-primary-faded {
+    opacity: 0.85;
+  }
+  
+  /* Add this to your OrderPage.css or create a new PaymentModal.css file */
+  .invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+  }

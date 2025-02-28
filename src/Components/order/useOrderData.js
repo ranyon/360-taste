@@ -1,7 +1,6 @@
 // useOrderData.js
 
 import { useState, useEffect } from 'react';
-import { getOrder, getOrderStatus } from './orderUtils';
 
 export const useOrderData = (orderId) => {
   const [order, setOrder] = useState(null);
@@ -21,16 +20,23 @@ export const useOrderData = (orderId) => {
         setLoading(true);
         setError(null);
         console.log('Fetching order data for:', orderId);
-        
-        const orderData = await getOrder(orderId);
+
+        // Simulate fetching order data
+        const orderData = {
+          id: orderId,
+          status: 'Order Received',
+          items: [],
+          total: 0,
+        };
+
         console.log('Order data received:', orderData);
-        
+
         setOrder(orderData);
         setStatus(orderData.status);
       } catch (err) {
         console.error('Error fetching order:', err);
         setError(err.message || 'Failed to load order details. Please try again later.');
-        
+
         // Try to at least get the status from localStorage as fallback
         try {
           const orders = JSON.parse(localStorage.getItem('orders')) || {};
@@ -52,10 +58,11 @@ export const useOrderData = (orderId) => {
 
   const refreshStatus = async () => {
     if (!orderId) return;
-    
+
     try {
       console.log('Refreshing status for order:', orderId);
-      const newStatus = await getOrderStatus(orderId);
+      // Simulate refreshing order status
+      const newStatus = 'Order Received';
       console.log('New status received:', newStatus);
       setStatus(newStatus);
     } catch (err) {
