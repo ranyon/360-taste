@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Card, Modal } from 'react-bootstrap';
 
 // Import your menu images
-import foodMenuThumbnail from './food-menu-full1.png';
-import foodMenuFull from './food-menu-full1.png';
-import drinksMenuThumbnail from './drinks-menu-full.png';
-import drinksMenuFull from './drinks-menu-full.png';
+import foodMenuThumbnail from './FoodMenu.png';
+import foodMenuFull from './FoodMenu.png';
+import drinksMenuThumbnail from './Drinks.png';
+import drinksMenuFull from './Drinks.png';
 
 const Menu = () => {
   const [showFoodMenu, setShowFoodMenu] = useState(false);

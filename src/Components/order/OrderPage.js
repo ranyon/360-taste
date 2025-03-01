@@ -10,6 +10,7 @@ import CartSection from './CartSection';
 import PaymentModal from './PaymentModal';
 import FloatingCartButton from './FloatingCartButton';
 import BackToTopButton from './BackToTopButton'; // Import the new component
+import CountdownTimer from './CountdownTimer';
 
 // Hooks
 import { useOrderState } from './useOrderState';
@@ -33,6 +34,9 @@ const OrderPage = () => {
   const [currentStatus, setCurrentStatus] = useState('Pending');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+  const closingTime = '21:30:00'; // 9:30 PM
+  const [isClosed, setIsClosed] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(closingTime));
 
   const {
     selectedCategory,
@@ -86,10 +90,45 @@ const OrderPage = () => {
     return orderId ? `/order-status/${orderId}` : '#';
   };
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const newTimeLeft = calculateTimeLeft(closingTime);
+      setTimeLeft(newTimeLeft);
+      if (newTimeLeft.hours === undefined) {
+        setIsClosed(true);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [closingTime]);
+
+  function calculateTimeLeft(closingTime) {
+    const now = new Date();
+    const closingDate = new Date(now.toDateString() + ' ' + closingTime);
+    if (now > closingDate) {
+      closingDate.setDate(closingDate.getDate() + 1);
+    }
+    const difference = closingDate - now;
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    }
+
+    return timeLeft;
+  }
+
   return (
     <Container className="py-5">
+      <br />
+      <br />
       <h1 className="text-center mb-5">Order Your Favorite Dishes</h1>
-      
+      <CountdownTimer  closingTime={closingTime} />
+
       {showThankYou && (
         <Alert variant="success" className="text-center mb-4" onClose={handleDismissThankYou} dismissible>
           <h4 className="alert-heading">Thank You for Your Order!</h4>
@@ -131,31 +170,40 @@ const OrderPage = () => {
         </Col>
       </Row>
 
-      <PaymentModal
-        showModal={showModal}
-        setShowModal={setShowModal}
-        errorMessage={errorMessage}
-        getTotalPrice={calculateTotal}
-        BUSINESS_MOMO={BUSINESS_MOMO}
-        network={network}
-        setNetwork={setNetwork}
-        customerPhone={customerPhone}
-        setCustomerPhone={setCustomerPhone}
-        handlePayment={handlePayment}
-        isSubmitting={isSubmitting}
-        cartItems={cart}
-        orderId={orderId}
-        setOrderId={setOrderId}
-        setOrderPlaced={setOrderPlaced}
-        clearCart={clearCart} // Pass the clearCart function to the PaymentModal
-      />
+      {isClosed ? (
+        <Alert variant="danger" className="text-center mb-4">
+          <h4 className="alert-heading">Restaurant Closed</h4>
+          <p>We are closed for the day. Please come back tomorrow.</p>
+        </Alert>
+      ) : (
+        <>
+          <PaymentModal
+            showModal={showModal}
+            setShowModal={setShowModal}
+            errorMessage={errorMessage}
+            getTotalPrice={calculateTotal}
+            BUSINESS_MOMO={BUSINESS_MOMO}
+            network={network}
+            setNetwork={setNetwork}
+            customerPhone={customerPhone}
+            setCustomerPhone={setCustomerPhone}
+            handlePayment={handlePayment}
+            isSubmitting={isSubmitting}
+            cartItems={cart}
+            orderId={orderId}
+            setOrderId={setOrderId}
+            setOrderPlaced={setOrderPlaced}
+            clearCart={clearCart} // Pass the clearCart function to the PaymentModal
+          />
+        </>
+      )}
 
       {/* Add the floating cart button component */}
-      <FloatingCartButton 
-        cart={cart} 
+      <FloatingCartButton
+        cart={cart}
         totalPrice={calculateTotal()}
       />
-      
+
       {/* Add the back to top button */}
       <BackToTopButton />
     </Container>
