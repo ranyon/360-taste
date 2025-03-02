@@ -10,12 +10,12 @@ import MaxiWaakye from './foodImg/maxiWaakye.png';
 import FullyLoadedWaakye from './foodImg/fullyLoadedWaakye.png';
 import MaxiJollof from './foodImg/maxiJollof.png';
 import FullyLoadedJollof from './foodImg/fullyLoadedJollof.png';
-import MiniJollof from './foodImg/jollof.png';
+import MiniJollof from './foodImg/maxiJollof.png';
 import Couscous from './foodImg/couscousAndChickenSauce.png';
 import Acheke from './foodImg/bankuAndTilapia.png';
 import AssortedFriedRice from './foodImg/assortedFriedRice.png';
-import MaxiFriedRice from './foodImg/jollof.png';
-import MiniFriedRice from './foodImg/jollof.png';
+import MaxiFriedRice from './foodImg/friedRice.jfif';
+import MiniFriedRice from './foodImg/friedRice.jfif';
 import FriedRiceWithBeefSauce from './foodImg/friedRiceWithBeefSauce.png';
 import AssortedJollof from './foodImg/maxiJollof.png';
 import AssortedNoodles from './foodImg/assortedNoodles.png';
@@ -23,13 +23,13 @@ import PlantainAndWings from './foodImg/plantainAndChickenWings.png';
 import FrenchFriesAndWings from './foodImg/frenchFriesAndChickenWIngs.png';
 import BankuAndTilapia from './foodImg/bankuAndTilapia.png';
 import LoadedFries from './foodImg/loadedFries.png';
-import FullyLoadedFries from './foodImg/jollof.png';
-import YamChipsAndChicken from './foodImg/jollof.png';
-import YamChipsAndTurkey from './foodImg/jollof.png';
-import YamChipsAndGoat from './foodImg/jollof.png';
-import LoadedYam from './foodImg/jollof.png';
-import ZongoRice from './foodImg/jollof.png';
-import FullyLoadedZongoRice from './foodImg/jollof.png';
+import FullyLoadedFries from './foodImg/loadedFries.png';
+import YamChipsAndChicken from './foodImg/yamChipsAndChickenWings.png';
+import YamChipsAndTurkey from './foodImg/yamChipsAndTurkey.png';
+import YamChipsAndGoat from './foodImg/yamChipsAndGoat.png';
+import LoadedYam from './foodImg/loadedYam.jfif';
+import ZongoRice from './foodImg/zongoRice.jfif';
+import FullyLoadedZongoRice from './foodImg/fullyLoadedZongoRice.jfif';
 // MAIN
 
 // SIDES
@@ -40,7 +40,7 @@ import FriedPlantain from './foodImg/plantain.png';
 import FrenchFries from './foodImg/frenchFries.png';
 import Kelewele from './foodImg/kelewele.png';
 import Banku from './foodImg/banku.png';
-import AchekeSide from './foodImg/bankuAndTilapia.png';
+import AchekeSide from './foodImg/acheke.jfif';
 // SIDES
 
 // SALADS & WRAPS

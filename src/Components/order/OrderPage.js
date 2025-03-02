@@ -34,6 +34,7 @@ const OrderPage = () => {
   const [currentStatus, setCurrentStatus] = useState('Pending');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+  const openingTime = '10:00:00'; // 10:00 AM
   const closingTime = '21:30:00'; // 9:30 PM
   const [isClosed, setIsClosed] = useState(false);
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(closingTime));
@@ -62,6 +63,29 @@ const OrderPage = () => {
     setOrderId,
     clearCart // Get clearCart from orderState
   } = orderState;
+
+  useEffect(() => {
+    const checkOpeningHours = () => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      const currentTime = currentHour * 60 + currentMinute;
+
+      const openingTimeMinutes = 10 * 60; // 10:00 AM
+      const closingTimeMinutes = 21 * 60 + 30; // 9:30 PM
+
+      if (currentTime < openingTimeMinutes || currentTime >= closingTimeMinutes) {
+        setIsClosed(true);
+      } else {
+        setIsClosed(false);
+      }
+    };
+
+    checkOpeningHours();
+    const interval = setInterval(checkOpeningHours, 60000); // Check every minute
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (categoryId) {
@@ -127,7 +151,7 @@ const OrderPage = () => {
       <br />
       <br />
       <h1 className="text-center mb-5">Order Your Favorite Dishes</h1>
-      <CountdownTimer  closingTime={closingTime} />
+      <CountdownTimer closingTime={closingTime} />
 
       {showThankYou && (
         <Alert variant="success" className="text-center mb-4" onClose={handleDismissThankYou} dismissible>
