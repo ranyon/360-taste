@@ -197,7 +197,7 @@ const OrderPage = () => {
       {isClosed ? (
         <Alert variant="danger" className="text-center mb-4">
           <h4 className="alert-heading">Restaurant Closed</h4>
-          <p>We are closed for the day. Please come back tomorrow.</p>
+          <p>We are closed. Please come back at 10 AM.</p>
         </Alert>
       ) : (
         <>
