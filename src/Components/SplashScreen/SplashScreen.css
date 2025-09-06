@@ -13,12 +13,16 @@
 }
 
 .splash-image {
+  max-width: 90%;
+  max-height: 90%;
+  width: auto;
+  height: auto;
   animation: zoomIn 1.5s ease-in-out;
 }
 
 @keyframes zoomIn {
   from {
-    transform: scale(0.5);
+    transform: scale(0.8);
     opacity: 0;
   }
   to {
@@ -37,5 +41,37 @@
   100% {
     opacity: 0;
     visibility: hidden;
+  }
+}
+
+/* Mobile and tablet responsive adjustments */
+@media (max-width: 768px) {
+  .splash-screen {
+    animation: fadeOut 1.5s ease-in-out forwards;
+  }
+  
+  .splash-image {
+    max-width: 80%;
+    max-height: 80%;
+    animation: zoomInMobile 1.5s ease-in-out;
+  }
+}
+
+@keyframes zoomInMobile {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .splash-image {
+    max-width: 70%;
+    max-height: 70%;
   }
 }
