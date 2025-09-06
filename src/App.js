@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import SplashScreen from './Components/SplashScreen/SplashScreen';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import NavbarComponent from './Components/Navbar/NavBarComponent';
@@ -30,12 +31,24 @@ function ScrollToTop() {
 }
 
 function App() {
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     AOS.init({
       duration: 1000,
       once: true,
     });
+
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
+
+  if (loading) {
+    return <SplashScreen />;
+  }
 
   return (
     <Router>
